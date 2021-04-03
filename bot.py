@@ -24,7 +24,12 @@ async def on_ready():
 @client.event
 async def on_message(message):
     loop = asyncio.get_event_loop()
+    
     if message.author.bot == False and message.guild != None:
+        try:
+            bot.process_commands(message)
+        except:
+            pass
         if message.content.lower().startswith(config_general["prefix"]):
             msg=message.content
             tomodel_message=msg.replace("jd","")
