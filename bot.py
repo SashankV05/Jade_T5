@@ -29,22 +29,21 @@ async def on_message(message):
         try:
             bot.process_commands(message)
         except:
-            pass
-        if message.content.lower().startswith(config_general["prefix"]):
+            message.content.lower().startswith(config_general["prefix"]):
             msg=message.content
-            tomodel_message=msg.replace("jd","")
+            tomodel_message=msg.replace(config_general["prefix"],"")
             async with message.channel.typing():
                     out = await loop.run_in_executor(ThreadPoolExecutor(), model.response, message.author, tomodel_message, True)
                 await message.reply(out.replace("@everyone","").replace("@here", ""))
                                    
                                     
-@bot.command()
-async def reset(ctx):
+@bot.command(aliases=['-r'])
+async def _res(ctx):
     model.reset(message.author.id)
     await message.reply("Successfully reset your history with Jade")
                                     
-@bot.command()
-async def history(ctx):
+@bot.command(aliases=['-h'])
+async def _hist(ctx):
     ogs=model.register(message.author.id, time.time())
     await message.reply("History:\n> "+"\n> ".join(logs["history"])+f"\nLast seen: {datetime.fromtimestamp(logs['timestamp'])}")
 
