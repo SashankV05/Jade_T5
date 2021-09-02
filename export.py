@@ -1,10 +1,11 @@
 import t5
+import t5.models
 import os
 import argparse
 import warnings
 import logging as py_logging
 from src.createtask import create_registry
-create_registry("src/temp.txt", "src/temp.txt", "all_mix", None)
+create_registry(None, "src/temp.txt", "src/temp.txt", "all_mix", None, "local")
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 py_logging.root.setLevel('INFO')
 
@@ -15,8 +16,6 @@ parser.add_argument('-out', type=str, default=None,
                     help='Directory to save output')
 parser.add_argument('-name', type=str, default=None,
                     help='Directory to save output')
-parser.add_argument('-size', type=str, default="small",
-                    help='an integer for the accumulator')
 parser.add_argument('-temperature', type=float, default=0.9,
                     help='model temperature')
 parser.add_argument('-beams', type=int, default=1,
@@ -25,20 +24,11 @@ parser.add_argument('-batch_size', type=int, default=1,
                     help='model batch size')
 args = parser.parse_args()
 
-# Set parallelism and batch size to fit on v2-8 TPU (if possible).
-# Limit number of checkpoints to fit within 5GB (if possible).
-model_parallelism, train_batch_size = {
-    "small": (1, 256),
-    "base": (2, 128),
-    "large": (8, 64),
-    "3B": (8, 16),
-    "11B": (8, 16)}[args.size]
-
 model = t5.models.MtfModel(
     tpu=False,
     model_dir=args.dir,
-    model_parallelism=model_parallelism,
-    batch_size=train_batch_size,
+    model_parallelism=1,
+    batch_size=256,
 )
 
 print("~~Exporting~~")

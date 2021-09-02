@@ -4,3 +4,5 @@ config*
 model*
 *.tar.gz
 *.txt.gz
+pretrained_models*
+models*
